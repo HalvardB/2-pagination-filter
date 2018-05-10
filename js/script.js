@@ -2,10 +2,8 @@
 - The student list is divided into pages of 10 students.
 - The page count is divided by the total number of students, so this
   works on any amount of students.
-- A search bar i added.
-- I decided to remove the search button and add the search
-  function on "keyup" to increase user experience.
-  (No need to click the button to search)
+- A search bar is added, with both keyup and click feature.
+- The search works also for email. Try searching for ".com".
 - When a search is made, a new arrey is created and pagination is
   reset.
 - The pagination will not show when there is less than 11 students.
@@ -81,23 +79,35 @@ $(".pagination").on("click", function(){
 });
 
 // Adding the search function to the HTML
-$(".student-search").html('<input id="search" placeholder="Search for students...">');
+$(".student-search").html('<input id="search" placeholder="Search for students..."><button> Search </button>');
+
+// Click event on search button
+$(".student-search button").on("click", function() {
+  search();
+});
+
+// Click event on "keyup"
+$("#search").on("keyup", function() {
+  search();
+});
 
 // Search logic
-$("#search").on("keyup", function() {
+function search(){
   searchUsed = true; // For correct pagination
   $(".sorry").hide(); // Just incase there is a new search after error message
   searchInput = document.getElementById('search');
   let filter = searchInput.value.toUpperCase();
-  let li = document.querySelectorAll(".student-list h3");
+  let name = document.querySelectorAll(".student-list h3");
+  let email = document.querySelectorAll(".student-list .email");
   studentArray = [] // Emptying the array before adding new students
 
   // Loop through all list items, and hide those who don't match the search query
-  for (i = 0; i < li.length; i++) {
-      a = li[i].textContent;
-      e = li[i];
+  for (i = 0; i < name.length; i++) {
+      a = name[i].textContent;
+      e = name[i];
+      o = email[i].textContent;
 
-      if (a.toUpperCase().indexOf(filter) > -1) {
+      if (a.toUpperCase().indexOf(filter) > -1 || o.toUpperCase().indexOf(filter) > -1 ) {
           studentArray.push(e)
       } else {
           let index = studentArray.indexOf(e);
@@ -110,9 +120,9 @@ $("#search").on("keyup", function() {
   // Hide old students
   $(studentList).parent().parent().hide();
 
-  // Adding an error message if there are no students in the array.
+  // Adding an error message if there are no students matching the search.
   if(studentArray.length === 0) {
-  $(".sorry").show()
+    $(".sorry").show();
   };
 
   // Add new students
@@ -123,4 +133,8 @@ $("#search").on("keyup", function() {
 
   // Show new pagination
   showPagination(studentArray.length);
-});
+};
+
+// Adding the error message to the HTML
+$(".sorry").html('<h1> Sorry, there are no students with that name.. </h1><img src="https://tinyurl.com/y8stclgh">');
+$(".sorry").hide();
